@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="primary_color">@color/primary_400</color>
+    <color name="secondary_color">@color/secondary_500</color>
+
+    <color name="primary_50">#171C30</color>
+    <color name="primary_100">#222A44</color>
+    <color name="primary_200">#2C3858</color>
+    <color name="primary_300">#36466C</color>
+    <color name="primary_400">#405480</color>
+    <color name="primary_500">#39528C</color>
+    <color name="primary_600">#4D639E</color>
+    <color name="primary_700">#6174AF</color>
+    <color name="primary_800">#7585C0</color>
+    <color name="primary_900">#8996D1</color>
+    <color name="primary_dark">#00074F</color>
+
+    <color name="secondary_400">#BA4A00</color>
+    <color name="secondary_500">#CC5700</color>
+    <color name="secondary_600">#DE6400</color>
+
+    <color name="bg_primary">#18181B</color>
+    <color name="bg_secondary">#0D0D0D</color>
+
+    <color name="text_on_color">#D9FFFFFF</color>
+    <color name="text_on_bg">#FFFFFF</color>
+
+    <color name="grey_95">#F2FFFFFF</color>
+    <color name="grey_90">#E6FFFFFF</color>
+    <color name="grey_85">#D9FFFFFF</color>
+    <color name="grey_80">#CCFFFFFF</color>
+    <color name="grey_75">#BFFFFFFF</color>
+    <color name="grey_70">#B3FFFFFF</color>
+    <color name="grey_65">#A6FFFFFF</color>
+    <color name="grey_60">#99FFFFFF</color>
+    <color name="grey_55">#8CFFFFFF</color>
+    <color name="grey_50">#80FFFFFF</color>
+    <color name="grey_45">#73FFFFFF</color>
+    <color name="grey_40">#66FFFFFF</color>
+    <color name="grey_35">#59FFFFFF</color>
+    <color name="grey_30">#4DFFFFFF</color>
+    <color name="grey_25">#40FFFFFF</color>
+    <color name="grey_20">#33FFFFFF</color>
+    <color name="grey_15">#26FFFFFF</color>
+    <color name="grey_10">#1AFFFFFF</color>
+    <color name="grey_09">#18FFFFFF</color>
+    <color name="grey_05">#0DFFFFFF</color>
+    <color name="grey_04">#0AFFFFFF</color>
+    <color name="grey_02">#05FFFFFF</color>
+
+    <color name="opaque_grey_900">#FAFAFA</color>
+    <color name="opaque_grey_800">#F5F5F5</color>
+    <color name="opaque_grey_700">#EEEEEE</color>
+    <color name="opaque_grey_600">#E0E0E0</color>
+    <color name="opaque_grey_500">#BDBDBD</color>
+    <color name="opaque_grey_400">#9E9E9E</color>
+    <color name="opaque_grey_300">#757575</color>
+    <color name="opaque_grey_200">#616161</color>
+    <color name="opaque_grey_100">#424242</color>
+    <color name="opaque_grey_50">#212121</color>
+
+    <color name="white">#FFFFFFFF</color>
+    <color name="black">#FF000000</color>
+
+    <color name="map_marker_tint">#00074F</color>
+</resources>

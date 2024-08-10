@@ -1,10 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="purple_200">#FFBB86FC</color>
-    <color name="purple_500">#FF6200EE</color>
-    <color name="purple_700">#FF3700B3</color>
-    <color name="teal_200">#FF03DAC5</color>
-    <color name="teal_700">#FF018786</color>
-    <color name="black">#FF000000</color>
+    <color name="primary_color">@color/primary_400</color>
+    <color name="secondary_color">@color/secondary_500</color>
+
+    <color name="primary_50">#E8F0FE</color>
+    <color name="primary_100">#C7DCFA</color>
+    <color name="primary_200">#A3C5F4</color>
+    <color name="primary_300">#7EBEEF</color>
+    <color name="primary_400">#5AA6EA</color>
+    <color name="primary_500">#476AA9</color>
+    <color name="primary_600">#3D5992</color>
+    <color name="primary_700">#33487B</color>
+    <color name="primary_800">#293764</color>
+    <color name="primary_900">#1F264D</color>
+    <color name="primary_dark">#00074F</color>
+
+    <color name="secondary_400">#F2B872</color>
+    <color name="secondary_500">#EF9A47</color>
+    <color name="secondary_600">#E58231</color>
+
+    <color name="bg_primary">#FFFFFF</color>
+    <color name="bg_secondary">#F5F7F9</color>
+
+    <color name="text_on_color">@color/primary_dark</color>
+    <color name="text_on_bg">@color/primary_dark</color>
+
+    <color name="grey_95">#F2000000</color>
+    <color name="grey_90">#E6000000</color>
+    <color name="grey_85">#D9000000</color>
+    <color name="grey_80">#CC000000</color>
+    <color name="grey_75">#BF000000</color>
+    <color name="grey_70">#B3000000</color>
+    <color name="grey_65">#A6000000</color>
+    <color name="grey_60">#99000000</color>
+    <color name="grey_55">#8C000000</color>
+    <color name="grey_50">#80000000</color>
+    <color name="grey_45">#73000000</color>
+    <color name="grey_40">#66000000</color>
+    <color name="grey_35">#59000000</color>
+    <color name="grey_30">#4D000000</color>
+    <color name="grey_25">#40000000</color>
+    <color name="grey_20">#33000000</color>
+    <color name="grey_15">#26000000</color>
+    <color name="grey_10">#1A000000</color>
+    <color name="grey_09">#18000000</color>
+    <color name="grey_05">#0D000000</color>
+    <color name="grey_04">#0A000000</color>
+    <color name="grey_02">#05000000</color>
+
+    <color name="opaque_grey_900">#212121</color>
+    <color name="opaque_grey_800">#424242</color>
+    <color name="opaque_grey_700">#616161</color>
+    <color name="opaque_grey_600">#757575</color>
+    <color name="opaque_grey_500">#9E9E9E</color>
+    <color name="opaque_grey_400">#BDBDBD</color>
+    <color name="opaque_grey_300">#E0E0E0</color>
+    <color name="opaque_grey_200">#EEEEEE</color>
+    <color name="opaque_grey_100">#F5F5F5</color>
+    <color name="opaque_grey_50">#FAFAFA</color>
+
     <color name="white">#FFFFFFFF</color>
+    <color name="black">#FF000000</color>
 </resources>

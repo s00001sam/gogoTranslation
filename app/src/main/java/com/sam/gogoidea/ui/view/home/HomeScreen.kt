@@ -14,8 +14,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.sam.gogoidea.R
 
 @Composable
 fun HomeScreen(
@@ -27,23 +29,34 @@ fun HomeScreen(
                 .padding(innerPadding)
                 .fillMaxSize()
         ) {
-            FloatingActionButton(
+            AddFAB(
                 modifier = Modifier
                     .padding(16.dp)
                     .align(Alignment.BottomEnd),
-                shape = CircleShape,
-                containerColor = Color.White,
                 onClick = {
 
                 },
-            ) {
-                Icon(
-                    modifier = Modifier.size(28.dp),
-                    imageVector = Icons.Default.Add,
-                    tint = Color.Black,
-                    contentDescription = null,
-                )
-            }
+            )
         }
+    }
+}
+
+@Composable
+fun AddFAB(
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit,
+) {
+    FloatingActionButton(
+        modifier = modifier,
+        shape = CircleShape,
+        containerColor = Color.White,
+        onClick = onClick,
+    ) {
+        Icon(
+            modifier = Modifier.size(28.dp),
+            imageVector = Icons.Default.Add,
+            tint = colorResource(id = R.color.primary_dark),
+            contentDescription = null,
+        )
     }
 }

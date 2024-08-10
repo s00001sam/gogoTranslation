@@ -1,4 +1,4 @@
-package com.sam.gogoidea.ui.theme
+package com.sam.gogozoo.ui.theme
 
 import android.app.Activity
 import android.os.Build
@@ -9,35 +9,41 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.res.colorResource
+import androidx.core.view.WindowCompat
+import com.sam.gogoidea.R
+import com.sam.gogoidea.ui.theme.MyTypography
 
-private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
-    secondary = PurpleGrey80,
-    tertiary = Pink80
-)
-
-private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = PurpleGrey40,
-    tertiary = Pink40
-
-    /* Other default colors to override
-    background = Color(0xFFFFFBFE),
-    surface = Color(0xFFFFFBFE),
-    onPrimary = Color.White,
-    onSecondary = Color.White,
-    onTertiary = Color.White,
-    onBackground = Color(0xFF1C1B1F),
-    onSurface = Color(0xFF1C1B1F),
-    */
+@Composable
+private fun myLightColorScheme() = lightColorScheme(
+    primary = colorResource(id = R.color.primary_color),
+    secondary = colorResource(id = R.color.secondary_color),
+    background = colorResource(id = R.color.bg_primary),
+    onPrimary = colorResource(id = R.color.text_on_color),
+    onSecondary = colorResource(id = R.color.text_on_color),
+    onBackground = colorResource(id = R.color.text_on_bg),
+    onSurface = colorResource(id = R.color.text_on_bg),
 )
 
 @Composable
-fun GoGoIdeaTheme(
+private fun myDarkColorScheme() = darkColorScheme(
+    primary = colorResource(id = R.color.primary_color),
+    secondary = colorResource(id = R.color.secondary_color),
+    background = colorResource(id = R.color.bg_primary),
+    onPrimary = colorResource(id = R.color.text_on_color),
+    onSecondary = colorResource(id = R.color.text_on_color),
+    onBackground = colorResource(id = R.color.text_on_bg),
+    onSurface = colorResource(id = R.color.text_on_bg),
+)
+
+@Composable
+fun IdeaTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
+    dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {
@@ -46,13 +52,21 @@ fun GoGoIdeaTheme(
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
 
-        darkTheme -> DarkColorScheme
-        else -> LightColorScheme
+        darkTheme -> myDarkColorScheme()
+        else -> myLightColorScheme()
+    }
+    val view = LocalView.current
+    if (!view.isInEditMode) {
+        SideEffect {
+            val window = (view.context as Activity).window
+            window.statusBarColor = colorScheme.primary.toArgb()
+            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = darkTheme
+        }
     }
 
     MaterialTheme(
         colorScheme = colorScheme,
-        typography = Typography,
+        typography = MyTypography,
         content = content
     )
 }

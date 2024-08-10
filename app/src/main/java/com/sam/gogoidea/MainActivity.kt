@@ -6,7 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.Modifier
-import com.sam.gogoidea.ui.theme.GoGoIdeaTheme
+import com.sam.gogozoo.ui.theme.IdeaTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -15,7 +15,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            GoGoIdeaTheme {
+            IdeaTheme {
                 MyRouter(
                     modifier = Modifier
                         .fillMaxSize(),
