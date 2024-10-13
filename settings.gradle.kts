@@ -19,5 +19,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "go go Idea"
+rootProject.name = "go go Translation"
 include(":app")

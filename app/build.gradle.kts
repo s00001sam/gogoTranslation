@@ -14,11 +14,11 @@ room {
 }
 
 android {
-    namespace = "com.sam.gogoidea"
+    namespace = "com.sam.gogotranslation"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.sam.gogoidea"
+        applicationId = "com.sam.gogotranslation"
         minSdk = 24
         targetSdk = 34
         versionCode = 1
@@ -64,8 +64,6 @@ dependencies {
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
-    implementation(libs.androidx.activity.compose)
-    implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
@@ -73,7 +71,6 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-    androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
@@ -93,8 +90,13 @@ dependencies {
     // Timber
     implementation(libs.timber)
 
-    // Navigation
+    // Compose
+    implementation(libs.androidx.activity.compose)
+    implementation(platform(libs.androidx.compose.bom))
+    androidTestImplementation(platform(libs.androidx.compose.bom))
+    implementation(libs.viewmodel.compose)
     implementation(libs.navigation.compose)
+    implementation(libs.constraintlayout.compose)
 
     // Retrofit
     implementation(libs.retrofit.core)
