@@ -19,8 +19,10 @@
     <color name="secondary_500">#EF9A47</color>
     <color name="secondary_600">#E58231</color>
 
+    <color name="bg_ground">#F5F7F9</color>
     <color name="bg_primary">#FFFFFF</color>
-    <color name="bg_secondary">#F5F7F9</color>
+    <color name="bg_secondary">@color/primary_50</color>
+    <color name="bg_decoration">@color/primary_100</color>
 
     <color name="text_on_color">@color/primary_dark</color>
     <color name="text_on_bg">@color/primary_dark</color>
