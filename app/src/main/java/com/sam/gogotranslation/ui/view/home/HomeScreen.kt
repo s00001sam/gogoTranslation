@@ -3,6 +3,7 @@ package com.sam.gogotranslation.ui.view.home
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -13,16 +14,19 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.selection.SelectionContainer
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.automirrored.filled.Send
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -45,7 +49,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalFocusManager
@@ -74,6 +77,35 @@ fun HomeScreen(
     val keyboardController = LocalSoftwareKeyboardController.current
     val screenHeight = LocalConfiguration.current.screenHeightDp.dp
     val bottomBarMaxHeight = screenHeight * BOTTOM_MAX_HEIGHT_PERCENT
+    val translationResult =
+        "dlkas;ldjask\ndkajshdliaskj\ndskajhdkjashd\nsdlkjaslkdajsdklajsldkasjlkdja\n" +
+            "dkajshdliaskj\n" +
+            "dskajhdkjashd\n" +
+            "sdlkjaslkdajsdklajsldkasjlkdja\n" +
+            "dkajshdliaskj\n" +
+            "dskajhdkjashd\n" +
+            "sdlkjaslkdajsdklajsldkasjlkdja\n" +
+            "dkajshdliaskj\n" +
+            "dskajhdkjashd\n" +
+            "sdlkjaslkdajsdklajsldkasjlkdja\n" +
+            "dkajshdliaskj\n" +
+            "dskajhdkjashd\n" +
+            "sdlkjaslkdajsdklajsldkasjlkdja\n" +
+            "dkajshdliaskj\n" +
+            "dskajhdkjashd\n" +
+            "sdlkjaslkdajsdklajsldkasjlkdja\n" +
+            "dkajshdliaskj\n" +
+            "dskajhdkjashd\n" +
+            "sdlkjaslkdajsdklajsldkasjlkdja\n" +
+            "dkajshdliaskj\n" +
+            "dskajhdkjashd\n" +
+            "sdlkjaslkdajsdklajsldkasjlkdja\n" +
+            "dkajshdliaskj\n" +
+            "dskajhdkjashd\n" +
+            "sdlkjaslkdajsdklajsldkasjlkdja\n" +
+            "dkajshdliaskj\n" +
+            "dskajhdkjashd\n" +
+            "sdlkjaslkdajsdklajsldkasjlkdja"
 
     fun closeKeyboard() {
         focusManager.clearFocus()
@@ -103,15 +135,35 @@ fun HomeScreen(
                 }
             )
         },
+        floatingActionButton = {
+            MoreFAB(
+                modifier = Modifier,
+                onClick = {
+                }
+            )
+        }
     ) { innerPadding ->
-        Box(
+        Column(
             modifier = Modifier
                 .padding(innerPadding)
                 .fillMaxSize()
+                .verticalScroll(rememberScrollState())
                 .noRippleClickable {
                     closeKeyboard()
-                }
-        ) {}
+                },
+        ) {
+            ResultTextCard(
+                modifier = Modifier
+                    .padding(
+                        top = 16.dp,
+                        start = 16.dp,
+                        end = 16.dp,
+                        bottom = 48.dp,
+                    )
+                    .fillMaxWidth(),
+                text = translationResult,
+            )
+        }
     }
 }
 
@@ -177,7 +229,6 @@ fun TranslationInputContent(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TranslationTextField(
     modifier: Modifier = Modifier,
@@ -321,20 +372,45 @@ fun TranslationBar(
 }
 
 @Composable
-fun AddFAB(
+fun ResultTextCard(
+    modifier: Modifier = Modifier,
+    text: String,
+) {
+    Card(
+        modifier = modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(16.dp))
+            .background(colorResource(id = R.color.bg_secondary))
+            .padding(16.dp),
+        colors = CardDefaults.cardColors().copy(
+            containerColor = colorResource(id = R.color.bg_secondary),
+        ),
+    ) {
+        SelectionContainer {
+            Text(
+                text = text,
+                style = MaterialTheme.typography.body1,
+                color = colorResource(id = R.color.text_on_bg),
+            )
+        }
+    }
+}
+
+@Composable
+fun MoreFAB(
     modifier: Modifier = Modifier,
     onClick: () -> Unit,
 ) {
     FloatingActionButton(
         modifier = modifier,
         shape = CircleShape,
-        containerColor = Color.White,
+        containerColor = colorResource(id = R.color.bg_primary),
+        contentColor = colorResource(id = R.color.text_on_bg),
         onClick = onClick,
     ) {
         Icon(
             modifier = Modifier.size(28.dp),
-            imageVector = Icons.Default.Add,
-            tint = colorResource(id = R.color.primary_dark),
+            imageVector = Icons.Default.MoreVert,
             contentDescription = null,
         )
     }
