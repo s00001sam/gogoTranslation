@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
@@ -15,6 +16,7 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
@@ -45,17 +47,23 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.intl.Locale
+import androidx.compose.ui.text.intl.LocaleList
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.sam.gogotranslation.R
 import com.sam.gogotranslation.ui.theme.body1
 import com.sam.gogotranslation.ui.view.noRippleClickable
+
+private const val BOTTOM_MAX_HEIGHT_PERCENT = 0.35f
 
 @Composable
 fun HomeScreen(
@@ -64,6 +72,8 @@ fun HomeScreen(
     val focusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
+    val screenHeight = LocalConfiguration.current.screenHeightDp.dp
+    val bottomBarMaxHeight = screenHeight * BOTTOM_MAX_HEIGHT_PERCENT
 
     fun closeKeyboard() {
         focusManager.clearFocus()
@@ -86,7 +96,11 @@ fun HomeScreen(
                     .imePadding()
                     .navigationBarsPadding(),
                 focusRequester = focusRequester,
-                onSend = {}
+                inputMaxHeight = bottomBarMaxHeight,
+                onSend = {
+                    // TODO: translate by Gemini API
+                    closeKeyboard()
+                }
             )
         },
     ) { innerPadding ->
@@ -122,6 +136,7 @@ fun HomeAppBar() {
 fun TranslationInputContent(
     modifier: Modifier = Modifier,
     focusRequester: FocusRequester,
+    inputMaxHeight: Dp,
     onSend: (String) -> Unit = {},
 ) {
     var input by rememberSaveable {
@@ -142,6 +157,7 @@ fun TranslationInputContent(
         TranslationTextField(
             modifier = Modifier
                 .fillMaxWidth()
+                .heightIn(max = inputMaxHeight)
                 .padding(start = 24.dp, end = 8.dp, top = 24.dp, bottom = 8.dp),
             text = input,
             onTextChanged = {
@@ -170,6 +186,7 @@ fun TranslationTextField(
     focusRequester: FocusRequester,
 ) {
     val hint = stringResource(id = R.string.translation_hint)
+    var currKeyboardLanguage by rememberSaveable { mutableStateOf("en") }
 
     BasicTextField(
         modifier = Modifier
@@ -179,6 +196,9 @@ fun TranslationTextField(
         minLines = 3,
         textStyle = MaterialTheme.typography.body1,
         cursorBrush = SolidColor(colorResource(id = R.color.text_on_bg)),
+        keyboardOptions = KeyboardOptions.Default.copy(
+            hintLocales = LocaleList(Locale(currKeyboardLanguage)),
+        ),
         decorationBox = { innerTextField ->
             Row(
                 modifier = modifier,
@@ -201,6 +221,12 @@ fun TranslationTextField(
                         .clip(CircleShape)
                         .clickable {
                             onTextChanged("")
+
+                            if (currKeyboardLanguage == "en") {
+                                currKeyboardLanguage = "zh"
+                            } else {
+                                currKeyboardLanguage = "en"
+                            }
                         }
                         .padding(12.dp),
                     imageVector = Icons.Default.Clear,
