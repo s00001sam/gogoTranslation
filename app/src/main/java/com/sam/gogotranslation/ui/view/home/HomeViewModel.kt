@@ -1,7 +1,11 @@
 package com.sam.gogotranslation.ui.view.home
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.ai.client.generativeai.type.GenerateContentResponse
+import com.sam.gogotranslation.R
+import com.sam.gogotranslation.repo.data.LanguageEntity
 import com.sam.gogotranslation.repo.data.State
 import com.sam.gogotranslation.repo.usecase.TranslationUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -21,21 +25,41 @@ class HomeViewModel @Inject constructor(
     private val _input = MutableStateFlow<String>("")
     val input: StateFlow<String> = _input
 
-    private val _result = MutableStateFlow<String>("")
-    val result: StateFlow<String> = _result
+    private val _resultState = MutableStateFlow<State<GenerateContentResponse>>(State.Empty)
+    val resultState: StateFlow<State<GenerateContentResponse>> = _resultState
+
+    private val _inputLanguage = MutableStateFlow<LanguageEntity>(LanguageEntity.ChineseTW)
+    val inputLanguage: StateFlow<LanguageEntity> = _inputLanguage
+
+    private val _outputLanguage = MutableStateFlow<LanguageEntity>(LanguageEntity.English)
+    val outputLanguage: StateFlow<LanguageEntity> = _outputLanguage
 
     init {
         collectTranslationFlow()
     }
 
-    fun translate(inputTxt: String) {
+    fun translate(
+        context: Context,
+        inputTxt: String
+    ) {
         if (inputTxt.isEmpty()) return
-        val content = "請將以下翻譯成簡單英文（不要說明，翻譯即可）\n$inputTxt）"
-        _input.tryEmit(content)
+
+        val prompt = context.getString(
+            R.string.translation_prompt,
+            outputLanguage.value.promptName,
+            inputTxt,
+        )
+        _input.tryEmit(prompt)
     }
 
     fun clearInput() {
         _input.tryEmit("")
+    }
+
+    fun switchLanguage() {
+        val temp = inputLanguage.value
+        _inputLanguage.tryEmit(outputLanguage.value)
+        _outputLanguage.tryEmit(temp)
     }
 
     private fun collectTranslationFlow() {
@@ -47,21 +71,7 @@ class HomeViewModel @Inject constructor(
                     flowOf(State.Empty)
                 }
             }.collectLatest { state ->
-                when (state) {
-                    is State.Success -> {
-                        _result.value = state.data.text.orEmpty()
-                    }
-
-                    is State.Error -> {
-                        _result.value = state.throwable.message.orEmpty()
-                    }
-
-                    is State.Loading -> {
-                        _result.value = "Loading"
-                    }
-
-                    State.Empty -> _result.value = ""
-                }
+                _resultState.tryEmit(state)
             }
         }
     }

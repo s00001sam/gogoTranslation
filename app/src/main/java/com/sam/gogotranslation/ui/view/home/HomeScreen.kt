@@ -18,7 +18,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -39,6 +38,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -52,12 +52,11 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.intl.Locale
-import androidx.compose.ui.text.intl.LocaleList
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
@@ -65,6 +64,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.sam.gogotranslation.R
+import com.sam.gogotranslation.repo.data.LanguageEntity
+import com.sam.gogotranslation.repo.data.State
 import com.sam.gogotranslation.ui.theme.body1
 import com.sam.gogotranslation.ui.view.noRippleClickable
 
@@ -75,12 +76,39 @@ fun HomeScreen(
     navController: NavController,
     viewModel: HomeViewModel = hiltViewModel(),
 ) {
+    val context = LocalContext.current
     val focusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
     val screenHeight = LocalConfiguration.current.screenHeightDp.dp
     val bottomBarMaxHeight = screenHeight * BOTTOM_MAX_HEIGHT_PERCENT
-    val translationResult by viewModel.result.collectAsState()
+    val resultState by viewModel.resultState.collectAsState()
+    var translationResult by remember { mutableStateOf("") }
+    val inputLanguage by viewModel.inputLanguage.collectAsState()
+    val outputLanguage by viewModel.outputLanguage.collectAsState()
+    val translatingStr = stringResource(id = R.string.translating)
+
+    LaunchedEffect(key1 = resultState) {
+        when (resultState) {
+            is State.Success -> {
+                val state = resultState as State.Success
+                translationResult = state.data.text.orEmpty()
+            }
+
+            is State.Error -> {
+                val state = resultState as State.Error
+                translationResult = state.throwable.message.orEmpty()
+            }
+
+            is State.Loading -> {
+                translationResult = translatingStr
+            }
+
+            State.Empty -> {
+                translationResult = ""
+            }
+        }
+    }
 
     fun closeKeyboard() {
         focusManager.clearFocus()
@@ -104,11 +132,16 @@ fun HomeScreen(
                     .navigationBarsPadding(),
                 focusRequester = focusRequester,
                 inputMaxHeight = bottomBarMaxHeight,
+                inputLanguage = inputLanguage,
+                outputLanguage = outputLanguage,
                 onClear = {
                     viewModel.clearInput()
                 },
+                onSwitchLanguage = {
+                    viewModel.switchLanguage()
+                },
                 onSend = { input ->
-                    viewModel.translate(input)
+                    viewModel.translate(context, input)
                     closeKeyboard()
                 }
             )
@@ -168,7 +201,10 @@ fun TranslationInputContent(
     modifier: Modifier = Modifier,
     focusRequester: FocusRequester,
     inputMaxHeight: Dp,
+    inputLanguage: LanguageEntity,
+    outputLanguage: LanguageEntity,
     onClear: () -> Unit = {},
+    onSwitchLanguage: () -> Unit = {},
     onSend: (String) -> Unit = {},
 ) {
     var input by rememberSaveable {
@@ -206,6 +242,9 @@ fun TranslationInputContent(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp, vertical = 16.dp),
+            inputLanguage = inputLanguage,
+            outputLanguage = outputLanguage,
+            onSwitch = onSwitchLanguage,
             onSend = {
                 onSend(input)
             },
@@ -222,7 +261,6 @@ fun TranslationTextField(
     focusRequester: FocusRequester,
 ) {
     val hint = stringResource(id = R.string.translation_hint)
-    var currKeyboardLanguage by rememberSaveable { mutableStateOf("en") }
 
     BasicTextField(
         modifier = Modifier
@@ -232,9 +270,6 @@ fun TranslationTextField(
         minLines = 3,
         textStyle = MaterialTheme.typography.body1,
         cursorBrush = SolidColor(colorResource(id = R.color.text_on_bg)),
-        keyboardOptions = KeyboardOptions.Default.copy(
-            hintLocales = LocaleList(Locale(currKeyboardLanguage)),
-        ),
         decorationBox = { innerTextField ->
             Row(
                 modifier = modifier,
@@ -257,12 +292,6 @@ fun TranslationTextField(
                         .clip(CircleShape)
                         .clickable {
                             onClear()
-
-                            if (currKeyboardLanguage == "en") {
-                                currKeyboardLanguage = "zh"
-                            } else {
-                                currKeyboardLanguage = "en"
-                            }
                         }
                         .padding(12.dp),
                     imageVector = Icons.Default.Clear,
@@ -277,10 +306,13 @@ fun TranslationTextField(
 @Composable
 fun TranslationBar(
     modifier: Modifier = Modifier,
+    inputLanguage: LanguageEntity = LanguageEntity.ChineseTW,
+    outputLanguage: LanguageEntity = LanguageEntity.English,
+    onSwitch: () -> Unit = {},
     onSend: () -> Unit = {},
 ) {
-    val chineseStr = stringResource(id = R.string.language_chinese)
-    val englishStr = stringResource(id = R.string.language_english)
+    val inputLanguageName = stringResource(id = inputLanguage.displayNameRes)
+    val outputLanguageName = stringResource(id = outputLanguage.displayNameRes)
 
     Row(
         modifier = modifier,
@@ -297,7 +329,7 @@ fun TranslationBar(
                 modifier = Modifier
                     .padding(8.dp)
                     .weight(1f),
-                text = chineseStr,
+                text = inputLanguageName,
                 color = colorResource(id = R.color.text_on_bg),
                 textAlign = TextAlign.Center,
                 overflow = TextOverflow.Ellipsis,
@@ -308,7 +340,9 @@ fun TranslationBar(
             Row(
                 modifier = Modifier
                     .clip(CircleShape)
-                    .clickable { }
+                    .clickable {
+                        onSwitch()
+                    }
                     .padding(8.dp),
             ) {
                 Icon(
@@ -332,7 +366,7 @@ fun TranslationBar(
                 modifier = Modifier
                     .padding(8.dp)
                     .weight(1f),
-                text = englishStr,
+                text = outputLanguageName,
                 color = colorResource(id = R.color.text_on_bg),
                 textAlign = TextAlign.Center,
                 overflow = TextOverflow.Ellipsis,
