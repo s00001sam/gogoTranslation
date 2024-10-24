@@ -39,6 +39,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -61,6 +62,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.sam.gogotranslation.R
 import com.sam.gogotranslation.ui.theme.body1
@@ -71,41 +73,14 @@ private const val BOTTOM_MAX_HEIGHT_PERCENT = 0.35f
 @Composable
 fun HomeScreen(
     navController: NavController,
+    viewModel: HomeViewModel = hiltViewModel(),
 ) {
     val focusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
     val screenHeight = LocalConfiguration.current.screenHeightDp.dp
     val bottomBarMaxHeight = screenHeight * BOTTOM_MAX_HEIGHT_PERCENT
-    val translationResult =
-        "dlkas;ldjask\ndkajshdliaskj\ndskajhdkjashd\nsdlkjaslkdajsdklajsldkasjlkdja\n" +
-            "dkajshdliaskj\n" +
-            "dskajhdkjashd\n" +
-            "sdlkjaslkdajsdklajsldkasjlkdja\n" +
-            "dkajshdliaskj\n" +
-            "dskajhdkjashd\n" +
-            "sdlkjaslkdajsdklajsldkasjlkdja\n" +
-            "dkajshdliaskj\n" +
-            "dskajhdkjashd\n" +
-            "sdlkjaslkdajsdklajsldkasjlkdja\n" +
-            "dkajshdliaskj\n" +
-            "dskajhdkjashd\n" +
-            "sdlkjaslkdajsdklajsldkasjlkdja\n" +
-            "dkajshdliaskj\n" +
-            "dskajhdkjashd\n" +
-            "sdlkjaslkdajsdklajsldkasjlkdja\n" +
-            "dkajshdliaskj\n" +
-            "dskajhdkjashd\n" +
-            "sdlkjaslkdajsdklajsldkasjlkdja\n" +
-            "dkajshdliaskj\n" +
-            "dskajhdkjashd\n" +
-            "sdlkjaslkdajsdklajsldkasjlkdja\n" +
-            "dkajshdliaskj\n" +
-            "dskajhdkjashd\n" +
-            "sdlkjaslkdajsdklajsldkasjlkdja\n" +
-            "dkajshdliaskj\n" +
-            "dskajhdkjashd\n" +
-            "sdlkjaslkdajsdklajsldkasjlkdja"
+    val translationResult by viewModel.result.collectAsState()
 
     fun closeKeyboard() {
         focusManager.clearFocus()
@@ -129,8 +104,11 @@ fun HomeScreen(
                     .navigationBarsPadding(),
                 focusRequester = focusRequester,
                 inputMaxHeight = bottomBarMaxHeight,
-                onSend = {
-                    // TODO: translate by Gemini API
+                onClear = {
+                    viewModel.clearInput()
+                },
+                onSend = { input ->
+                    viewModel.translate(input)
                     closeKeyboard()
                 }
             )
@@ -139,6 +117,7 @@ fun HomeScreen(
             MoreFAB(
                 modifier = Modifier,
                 onClick = {
+                    // TODO: Show more options
                 }
             )
         }
@@ -152,7 +131,7 @@ fun HomeScreen(
                     closeKeyboard()
                 },
         ) {
-            ResultTextCard(
+            if (translationResult.isNotEmpty()) ResultTextCard(
                 modifier = Modifier
                     .padding(
                         top = 16.dp,
@@ -189,6 +168,7 @@ fun TranslationInputContent(
     modifier: Modifier = Modifier,
     focusRequester: FocusRequester,
     inputMaxHeight: Dp,
+    onClear: () -> Unit = {},
     onSend: (String) -> Unit = {},
 ) {
     var input by rememberSaveable {
@@ -211,11 +191,15 @@ fun TranslationInputContent(
                 .fillMaxWidth()
                 .heightIn(max = inputMaxHeight)
                 .padding(start = 24.dp, end = 8.dp, top = 24.dp, bottom = 8.dp),
+            focusRequester = focusRequester,
             text = input,
             onTextChanged = {
                 input = it
             },
-            focusRequester = focusRequester,
+            onClear = {
+                input = ""
+                onClear()
+            },
         )
 
         TranslationBar(
@@ -234,6 +218,7 @@ fun TranslationTextField(
     modifier: Modifier = Modifier,
     text: String,
     onTextChanged: (String) -> Unit,
+    onClear: () -> Unit = {},
     focusRequester: FocusRequester,
 ) {
     val hint = stringResource(id = R.string.translation_hint)
@@ -271,7 +256,7 @@ fun TranslationTextField(
                         .size(48.dp)
                         .clip(CircleShape)
                         .clickable {
-                            onTextChanged("")
+                            onClear()
 
                             if (currKeyboardLanguage == "en") {
                                 currKeyboardLanguage = "zh"

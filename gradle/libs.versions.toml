@@ -11,8 +11,9 @@ activityCompose = "1.9.1"
 composeBom = "2024.10.00"
 viewmodelCompose = "2.8.4"
 navigationCompose = "2.7.7"
+hiltNavigationCompose = "1.2.0"
 constraintlayoutCompose = "1.0.1"
-geminiVersion = "0.9.0"
+geminiVersion = "0.7.0"
 mapsSecrets = "2.0.1"
 room = "2.6.1"
 hilt = "2.49"
@@ -35,6 +36,7 @@ androidx-activity-compose = { group = "androidx.activity", name = "activity-comp
 androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
 viewmodel-compose = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-compose", version.ref = "viewmodelCompose" }
 navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
+hilt-navigation_compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
 constraintlayout-compose = { group = "androidx.constraintlayout", name = "constraintlayout-compose", version.ref = "constraintlayoutCompose" }
 androidx-ui = { group = "androidx.compose.ui", name = "ui" }
 androidx-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }

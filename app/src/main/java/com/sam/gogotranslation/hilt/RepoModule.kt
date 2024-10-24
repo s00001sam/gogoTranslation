@@ -18,7 +18,7 @@ class RepoModule {
     @Singleton
     @Provides
     fun providerGeminiModel(): GenerativeModel = GenerativeModel(
-        modelName = "gemini-1.5-flash",
+        modelName = "gemini-1.5-pro-latest",
         apiKey = BuildConfig.GEMINI_KEY
     )
 
@@ -43,5 +43,5 @@ class RepoModule {
     fun provideRepository(
         @RemoteData remoteDataSource: BaseDataSource,
         @LocalData localDataSource: BaseDataSource,
-    ) = TranslationRepository(remoteDataSource, localDataSource)
+    ) = TranslationRepository(localDataSource, remoteDataSource)
 }

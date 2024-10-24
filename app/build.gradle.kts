@@ -96,6 +96,7 @@ dependencies {
     androidTestImplementation(platform(libs.androidx.compose.bom))
     implementation(libs.viewmodel.compose)
     implementation(libs.navigation.compose)
+    implementation(libs.hilt.navigation.compose)
     implementation(libs.constraintlayout.compose)
 
     // Retrofit
