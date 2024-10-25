@@ -18,7 +18,7 @@ class RepoModule {
     @Singleton
     @Provides
     fun providerGeminiModel(): GenerativeModel = GenerativeModel(
-        modelName = "gemini-1.5-pro-latest",
+        modelName = "gemini-1.5-flash-latest",
         apiKey = BuildConfig.GEMINI_KEY
     )
 

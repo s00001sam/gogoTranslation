@@ -1,5 +1,6 @@
 package com.sam.gogotranslation.ui.view.home
 
+import android.content.Intent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -26,11 +27,11 @@ import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -51,12 +52,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
@@ -67,9 +70,13 @@ import com.sam.gogotranslation.R
 import com.sam.gogotranslation.repo.data.LanguageEntity
 import com.sam.gogotranslation.repo.data.State
 import com.sam.gogotranslation.ui.theme.body1
+import com.sam.gogotranslation.ui.view.Copy
+import com.sam.gogotranslation.ui.view.CustomExpandableFAB
+import com.sam.gogotranslation.ui.view.MyFABItem
 import com.sam.gogotranslation.ui.view.noRippleClickable
 
 private const val BOTTOM_MAX_HEIGHT_PERCENT = 0.35f
+private const val SHARE_TYPE_PLAIN = "text/plain"
 
 @Composable
 fun HomeScreen(
@@ -80,6 +87,7 @@ fun HomeScreen(
     val focusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
+    val clipboardManager = LocalClipboardManager.current
     val screenHeight = LocalConfiguration.current.screenHeightDp.dp
     val bottomBarMaxHeight = screenHeight * BOTTOM_MAX_HEIGHT_PERCENT
     val resultState by viewModel.resultState.collectAsState()
@@ -87,6 +95,22 @@ fun HomeScreen(
     val inputLanguage by viewModel.inputLanguage.collectAsState()
     val outputLanguage by viewModel.outputLanguage.collectAsState()
     val translatingStr = stringResource(id = R.string.translating)
+    var isFabExpanded by remember { mutableStateOf(false) }
+
+    val moreItem = MyFABItem(
+        icon = Icons.Default.MoreVert,
+        textRes = R.string.fab_more,
+    )
+    val optionItems = listOf(
+        MyFABItem(
+            icon = Icons.Default.Copy,
+            textRes = R.string.fab_copy,
+        ),
+        MyFABItem(
+            icon = Icons.Default.Share,
+            textRes = R.string.fab_share,
+        ),
+    )
 
     LaunchedEffect(key1 = resultState) {
         when (resultState) {
@@ -147,11 +171,34 @@ fun HomeScreen(
             )
         },
         floatingActionButton = {
-            MoreFAB(
-                modifier = Modifier,
-                onClick = {
-                    // TODO: Show more options
-                }
+            CustomExpandableFAB(
+                fabButton = moreItem,
+                items = optionItems,
+                isExpanded = isFabExpanded,
+                onExpanded = { isExpanded ->
+                    isFabExpanded = isExpanded
+                },
+                onItemClick = ItemClick@{ item ->
+                    when (item.textRes) {
+                        R.string.fab_copy -> {
+                            if (translationResult.isEmpty()) return@ItemClick
+                            clipboardManager.setText(AnnotatedString(translationResult))
+                        }
+
+                        R.string.fab_share -> {
+                            if (translationResult.isEmpty()) return@ItemClick
+                            val sendIntent: Intent = Intent().apply {
+                                action = Intent.ACTION_SEND
+                                putExtra(Intent.EXTRA_TEXT, translationResult)
+                                type = SHARE_TYPE_PLAIN
+                            }
+
+                            Intent.createChooser(sendIntent, null).run {
+                                context.startActivity(this)
+                            }
+                        }
+                    }
+                },
             )
         }
     ) { innerPadding ->
@@ -161,6 +208,7 @@ fun HomeScreen(
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
                 .noRippleClickable {
+                    isFabExpanded = false
                     closeKeyboard()
                 },
         ) {
@@ -412,25 +460,5 @@ fun ResultTextCard(
                 color = colorResource(id = R.color.text_on_bg),
             )
         }
-    }
-}
-
-@Composable
-fun MoreFAB(
-    modifier: Modifier = Modifier,
-    onClick: () -> Unit,
-) {
-    FloatingActionButton(
-        modifier = modifier,
-        shape = CircleShape,
-        containerColor = colorResource(id = R.color.bg_primary),
-        contentColor = colorResource(id = R.color.text_on_bg),
-        onClick = onClick,
-    ) {
-        Icon(
-            modifier = Modifier.size(28.dp),
-            imageVector = Icons.Default.MoreVert,
-            contentDescription = null,
-        )
     }
 }
