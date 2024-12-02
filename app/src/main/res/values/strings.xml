@@ -7,4 +7,5 @@
     <string name="fab_more">更多</string>
     <string name="fab_copy">複製</string>
     <string name="fab_share">分享</string>
+    <string name="history_empty">暫無紀錄</string>
 </resources>

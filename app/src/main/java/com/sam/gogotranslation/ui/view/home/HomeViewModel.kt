@@ -6,7 +6,7 @@ import com.google.ai.client.generativeai.type.GenerateContentResponse
 import com.sam.gogotranslation.repo.data.LanguageEntity
 import com.sam.gogotranslation.repo.data.State
 import com.sam.gogotranslation.repo.data.TranslationEntity
-import com.sam.gogotranslation.repo.usecase.GetTranslationUseCase
+import com.sam.gogotranslation.repo.usecase.GetSingleTranslationUseCase
 import com.sam.gogotranslation.repo.usecase.TranslateUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,7 +20,7 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val translateUseCase: TranslateUseCase,
-    private val getTranslationUseCase: GetTranslationUseCase,
+    private val getSingleTranslationUseCase: GetSingleTranslationUseCase,
 ) : ViewModel() {
 
     private val _translationId = MutableStateFlow<Int>(-1)
@@ -70,7 +70,7 @@ class HomeViewModel @Inject constructor(
     private fun collectEntityFlow() {
         viewModelScope.launch {
             translationId.flatMapLatest {
-                getTranslationUseCase.getStateFlow(id = it)
+                getSingleTranslationUseCase.getStateFlow(id = it)
             }.collect {
                 _currTranslationEntity.tryEmit(it)
             }

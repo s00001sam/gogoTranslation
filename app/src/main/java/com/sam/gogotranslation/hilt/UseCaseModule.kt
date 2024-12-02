@@ -2,7 +2,8 @@ package com.sam.gogotranslation.hilt
 
 import android.content.Context
 import com.sam.gogotranslation.repo.repository.TranslationRepository
-import com.sam.gogotranslation.repo.usecase.GetTranslationUseCase
+import com.sam.gogotranslation.repo.usecase.GetSingleTranslationUseCase
+import com.sam.gogotranslation.repo.usecase.GetTranslationsUseCase
 import com.sam.gogotranslation.repo.usecase.TranslateUseCase
 import dagger.Module
 import dagger.Provides
@@ -21,6 +22,10 @@ class UseCaseModule {
     ) = TranslateUseCase(context, repository)
 
     @Provides
-    fun provideGetTranslationUseCase(repository: TranslationRepository) =
-        GetTranslationUseCase(repository)
+    fun provideGetSingleTranslationUseCase(repository: TranslationRepository) =
+        GetSingleTranslationUseCase(repository)
+
+    @Provides
+    fun provideGetTranslationsUseCase(repository: TranslationRepository) =
+        GetTranslationsUseCase(repository)
 }

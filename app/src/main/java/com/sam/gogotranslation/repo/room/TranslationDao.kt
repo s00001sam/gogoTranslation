@@ -26,6 +26,6 @@ interface TranslationDao {
     @Query("SELECT * FROM translation WHERE id=:id ")
     fun getOneFlowById(id: Int): Flow<TranslationEntity?>
 
-    @Query("SELECT * FROM translation")
+    @Query("SELECT * FROM translation ORDER BY id DESC")
     fun getListFlow(): Flow<List<TranslationEntity>>
 }

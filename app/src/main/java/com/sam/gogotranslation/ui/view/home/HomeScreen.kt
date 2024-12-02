@@ -68,9 +68,11 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.sam.gogotranslation.R
+import com.sam.gogotranslation.ROUTER_DIALOG_HISTORY
 import com.sam.gogotranslation.repo.data.LanguageEntity
 import com.sam.gogotranslation.repo.data.State
 import com.sam.gogotranslation.ui.theme.body1
+import com.sam.gogotranslation.ui.view.Clock
 import com.sam.gogotranslation.ui.view.Copy
 import com.sam.gogotranslation.ui.view.CustomExpandableFAB
 import com.sam.gogotranslation.ui.view.LoadingIndicator
@@ -130,7 +132,11 @@ fun HomeScreen(
             .fillMaxSize(),
         containerColor = colorResource(id = R.color.bg_ground),
         topBar = {
-            HomeAppBar()
+            HomeAppBar(
+                toHistories = {
+                    navController.navigate(route = ROUTER_DIALOG_HISTORY)
+                }
+            )
         },
         bottomBar = {
             TranslationInputContent(
@@ -227,13 +233,29 @@ fun HomeScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeAppBar() {
+fun HomeAppBar(
+    toHistories: () -> Unit = {},
+) {
     val title = stringResource(id = R.string.app_name)
 
     CenterAlignedTopAppBar(
         title = {
             Text(
                 text = title,
+            )
+        },
+        actions = {
+            Icon(
+                modifier = Modifier
+                    .padding(horizontal = 8.dp)
+                    .size(48.dp)
+                    .clickable {
+                        toHistories()
+                    }
+                    .padding(8.dp),
+                imageVector = Icons.Default.Clock,
+                tint = colorResource(id = R.color.text_on_bg),
+                contentDescription = null,
             )
         },
         colors = TopAppBarDefaults.centerAlignedTopAppBarColors().copy(
