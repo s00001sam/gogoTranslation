@@ -1,10 +1,10 @@
 package com.sam.gogotranslation.ui.view.home
 
 import android.content.Intent
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -72,6 +73,7 @@ import com.sam.gogotranslation.repo.data.State
 import com.sam.gogotranslation.ui.theme.body1
 import com.sam.gogotranslation.ui.view.Copy
 import com.sam.gogotranslation.ui.view.CustomExpandableFAB
+import com.sam.gogotranslation.ui.view.LoadingIndicator
 import com.sam.gogotranslation.ui.view.MyFABItem
 import com.sam.gogotranslation.ui.view.noRippleClickable
 
@@ -91,10 +93,9 @@ fun HomeScreen(
     val screenHeight = LocalConfiguration.current.screenHeightDp.dp
     val bottomBarMaxHeight = screenHeight * BOTTOM_MAX_HEIGHT_PERCENT
     val resultState by viewModel.resultState.collectAsState()
-    var translationResult by remember { mutableStateOf("") }
+    val translationResult by viewModel.currTranslationEntity.collectAsState(null)
     val inputLanguage by viewModel.inputLanguage.collectAsState()
     val outputLanguage by viewModel.outputLanguage.collectAsState()
-    val translatingStr = stringResource(id = R.string.translating)
     var isFabExpanded by remember { mutableStateOf(false) }
 
     val moreItem = MyFABItem(
@@ -112,31 +113,15 @@ fun HomeScreen(
         ),
     )
 
-    LaunchedEffect(key1 = resultState) {
-        when (resultState) {
-            is State.Success -> {
-                val state = resultState as State.Success
-                translationResult = state.data.text.orEmpty()
-            }
-
-            is State.Error -> {
-                val state = resultState as State.Error
-                translationResult = state.throwable.message.orEmpty()
-            }
-
-            is State.Loading -> {
-                translationResult = translatingStr
-            }
-
-            State.Empty -> {
-                translationResult = ""
-            }
-        }
-    }
-
     fun closeKeyboard() {
         focusManager.clearFocus()
         keyboardController?.hide()
+    }
+
+    LaunchedEffect(resultState) {
+        (resultState as? State.Error)?.let {
+            Toast.makeText(context, it.throwable.message, Toast.LENGTH_SHORT).show()
+        }
     }
 
     Scaffold(
@@ -160,12 +145,13 @@ fun HomeScreen(
                 outputLanguage = outputLanguage,
                 onClear = {
                     viewModel.clearInput()
+                    viewModel.clearCurrId()
                 },
                 onSwitchLanguage = {
                     viewModel.switchLanguage()
                 },
                 onSend = { input ->
-                    viewModel.translate(context, input)
+                    viewModel.translate(input)
                     closeKeyboard()
                 }
             )
@@ -179,17 +165,18 @@ fun HomeScreen(
                     isFabExpanded = isExpanded
                 },
                 onItemClick = ItemClick@{ item ->
+                    val output = translationResult?.output.orEmpty()
                     when (item.textRes) {
                         R.string.fab_copy -> {
-                            if (translationResult.isEmpty()) return@ItemClick
-                            clipboardManager.setText(AnnotatedString(translationResult))
+                            if (output.isEmpty()) return@ItemClick
+                            clipboardManager.setText(AnnotatedString(output))
                         }
 
                         R.string.fab_share -> {
-                            if (translationResult.isEmpty()) return@ItemClick
+                            if (output.isEmpty()) return@ItemClick
                             val sendIntent: Intent = Intent().apply {
                                 action = Intent.ACTION_SEND
-                                putExtra(Intent.EXTRA_TEXT, translationResult)
+                                putExtra(Intent.EXTRA_TEXT, output)
                                 type = SHARE_TYPE_PLAIN
                             }
 
@@ -202,7 +189,7 @@ fun HomeScreen(
             )
         }
     ) { innerPadding ->
-        Column(
+        Box(
             modifier = Modifier
                 .padding(innerPadding)
                 .fillMaxSize()
@@ -212,7 +199,8 @@ fun HomeScreen(
                     closeKeyboard()
                 },
         ) {
-            if (translationResult.isNotEmpty()) ResultTextCard(
+            val output = translationResult?.output.orEmpty()
+            if (output.isNotEmpty()) ResultTextCard(
                 modifier = Modifier
                     .padding(
                         top = 16.dp,
@@ -221,8 +209,18 @@ fun HomeScreen(
                         bottom = 48.dp,
                     )
                     .fillMaxWidth(),
-                text = translationResult,
+                text = output,
             )
+
+            if (resultState is State.Loading) {
+                LoadingIndicator(
+                    modifier = Modifier
+                        .padding(top = 32.dp)
+                        .fillMaxWidth()
+                        .wrapContentHeight(),
+                    thenModifier = Modifier.noRippleClickable { },
+                )
+            }
         }
     }
 }

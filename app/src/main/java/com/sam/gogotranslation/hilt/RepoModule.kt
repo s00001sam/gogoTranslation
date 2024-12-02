@@ -1,14 +1,17 @@
 package com.sam.gogotranslation.hilt
 
+import android.content.Context
 import com.google.ai.client.generativeai.GenerativeModel
 import com.sam.gogotranslation.BuildConfig
 import com.sam.gogotranslation.repo.datasource.BaseDataSource
 import com.sam.gogotranslation.repo.datasource.LocalDataSource
 import com.sam.gogotranslation.repo.datasource.RemoteDataSource
 import com.sam.gogotranslation.repo.repository.TranslationRepository
+import com.sam.gogotranslation.repo.room.MyDatabase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
@@ -25,8 +28,8 @@ class RepoModule {
     @Singleton
     @LocalData
     @Provides
-    fun providerLocalDataSource(): BaseDataSource {
-        return LocalDataSource()
+    fun providerLocalDataSource(db: MyDatabase): BaseDataSource {
+        return LocalDataSource(db)
     }
 
     @Singleton
@@ -44,4 +47,8 @@ class RepoModule {
         @RemoteData remoteDataSource: BaseDataSource,
         @LocalData localDataSource: BaseDataSource,
     ) = TranslationRepository(localDataSource, remoteDataSource)
+
+    @Singleton
+    @Provides
+    fun provideRoomDB(@ApplicationContext context: Context) = MyDatabase.getInstance(context)
 }

@@ -3,7 +3,6 @@
     <string name="translation_hint">你今天翻譯了嗎</string>
     <string name="language_chinese_tw">繁體中文</string>
     <string name="language_english">英文</string>
-    <string name="translating">翻譯中……</string>
     <string name="translation_prompt">請將以下翻譯成%1$s（不要說明，翻譯即可）\n「%2$s」</string>
     <string name="fab_more">更多</string>
     <string name="fab_copy">複製</string>
