@@ -27,7 +27,7 @@ fun MyRouter(
         navController = navController,
         startDestination = Home,
     ) {
-        composable<Home> {
+        composable<Home> { backStackEntry ->
             HomeScreen(
                 navController = navController,
             )

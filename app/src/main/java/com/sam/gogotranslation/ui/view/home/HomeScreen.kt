@@ -71,6 +71,7 @@ import com.sam.gogotranslation.History
 import com.sam.gogotranslation.R
 import com.sam.gogotranslation.repo.data.LanguageEntity
 import com.sam.gogotranslation.repo.data.State
+import com.sam.gogotranslation.repo.data.TranslationEntity
 import com.sam.gogotranslation.ui.theme.body1
 import com.sam.gogotranslation.ui.view.Clock
 import com.sam.gogotranslation.ui.view.Copy
@@ -81,6 +82,7 @@ import com.sam.gogotranslation.ui.view.noRippleClickable
 
 private const val BOTTOM_MAX_HEIGHT_PERCENT = 0.35f
 private const val SHARE_TYPE_PLAIN = "text/plain"
+const val KEY_HISTORY_SELECTED = "KEY_HISTORY_SELECTED"
 
 @Composable
 fun HomeScreen(
@@ -99,6 +101,13 @@ fun HomeScreen(
     val inputLanguage by viewModel.inputLanguage.collectAsState()
     val outputLanguage by viewModel.outputLanguage.collectAsState()
     var isFabExpanded by remember { mutableStateOf(false) }
+    var input by rememberSaveable {
+        mutableStateOf("")
+    }
+    val savedStateHandle = navController.currentBackStackEntry?.savedStateHandle
+    val selectedHistoryItem = savedStateHandle
+        ?.getStateFlow<TranslationEntity?>(KEY_HISTORY_SELECTED, null)
+        ?.collectAsState()
 
     val moreItem = MyFABItem(
         icon = Icons.Default.MoreVert,
@@ -126,6 +135,13 @@ fun HomeScreen(
         }
     }
 
+    LaunchedEffect(selectedHistoryItem?.value) {
+        val translationEntity = selectedHistoryItem?.value ?: return@LaunchedEffect
+        viewModel.setCurrId(translationEntity.id)
+        input = translationEntity.input
+        savedStateHandle[KEY_HISTORY_SELECTED] = null
+    }
+
     Scaffold(
         modifier = Modifier
             .statusBarsPadding()
@@ -149,6 +165,10 @@ fun HomeScreen(
                 inputMaxHeight = bottomBarMaxHeight,
                 inputLanguage = inputLanguage,
                 outputLanguage = outputLanguage,
+                input = input,
+                onInputChanged = {
+                    input = it
+                },
                 onClear = {
                     viewModel.clearInput()
                     viewModel.clearCurrId()
@@ -271,14 +291,12 @@ fun TranslationInputContent(
     inputMaxHeight: Dp,
     inputLanguage: LanguageEntity,
     outputLanguage: LanguageEntity,
+    input: String = "",
+    onInputChanged: (String) -> Unit = {},
     onClear: () -> Unit = {},
     onSwitchLanguage: () -> Unit = {},
     onSend: (String) -> Unit = {},
 ) {
-    var input by rememberSaveable {
-        mutableStateOf("")
-    }
-
     DisposableEffect(Unit) {
         focusRequester.requestFocus()
         onDispose { }
@@ -298,10 +316,10 @@ fun TranslationInputContent(
             focusRequester = focusRequester,
             text = input,
             onTextChanged = {
-                input = it
+                onInputChanged(it)
             },
             onClear = {
-                input = ""
+                onInputChanged("")
                 onClear()
             },
         )

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">go go Translation</string>
+    <string name="app_name">gogoTranslation</string>
     <string name="translation_hint">你今天翻譯了嗎</string>
     <string name="language_chinese_tw">繁體中文</string>
     <string name="language_english">英文</string>

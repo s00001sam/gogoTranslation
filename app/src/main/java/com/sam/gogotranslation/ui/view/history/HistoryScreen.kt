@@ -35,6 +35,8 @@ import androidx.navigation.NavController
 import com.sam.gogotranslation.R
 import com.sam.gogotranslation.repo.data.TranslationEntity
 import com.sam.gogotranslation.ui.theme.body1
+import com.sam.gogotranslation.ui.view.home.KEY_HISTORY_SELECTED
+import timber.log.Timber
 
 private const val DIALOG_HEIGHT_PERCENTAGE = 0.9f
 
@@ -73,6 +75,15 @@ fun HistoryScreen(
                             modifier = Modifier
                                 .fillMaxWidth(),
                             item = item,
+                            onCardClick = { entity ->
+                                runCatching {
+                                    val backStackEntry = navController.previousBackStackEntry
+                                    val savedStateHandle = backStackEntry?.savedStateHandle
+                                    savedStateHandle?.set(KEY_HISTORY_SELECTED, entity)
+                                }.onFailure(Timber::e)
+
+                                navController.navigateUp()
+                            }
                         )
 
                         if (index < translations.size - 1) Spacer(
@@ -97,6 +108,7 @@ fun HistoryScreen(
 fun TranslationItemView(
     modifier: Modifier = Modifier,
     item: TranslationEntity,
+    onCardClick: (TranslationEntity) -> Unit = {},
 ) {
     val density = LocalDensity.current
     val textMeasurer = rememberTextMeasurer()
@@ -108,7 +120,9 @@ fun TranslationItemView(
 
     Card(
         modifier = modifier
-            .clickable {  },
+            .clickable {
+                onCardClick(item)
+            },
         colors = CardDefaults.cardColors().copy(
             containerColor = colorResource(R.color.bg_secondary),
         ),

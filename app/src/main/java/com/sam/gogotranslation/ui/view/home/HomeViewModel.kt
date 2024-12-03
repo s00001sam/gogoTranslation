@@ -61,6 +61,10 @@ class HomeViewModel @Inject constructor(
         _currTranslationEntity.tryEmit(null)
     }
 
+    fun setCurrId(id: Int) {
+        _translationId.tryEmit(id)
+    }
+
     fun switchLanguage() {
         val temp = inputLanguage.value
         _inputLanguage.tryEmit(outputLanguage.value)
