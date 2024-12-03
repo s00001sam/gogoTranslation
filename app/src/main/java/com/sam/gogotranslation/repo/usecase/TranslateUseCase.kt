@@ -11,7 +11,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.onStart
-import timber.log.Timber
 
 class TranslateUseCase(
     private val context: Context,
@@ -30,8 +29,9 @@ class TranslateUseCase(
                     oriInput,
                 )
                 val result = repository.generateTranslation(prompt)
+                val findTranslation = repository.getSingleTranslation(id)
                 val entity = TranslationEntity(
-                    id = if (id <= -1) 0 else id,
+                    id = if (findTranslation == null) 0 else id,
                     input = oriInput,
                     output = result.text.orEmpty(),
                 )

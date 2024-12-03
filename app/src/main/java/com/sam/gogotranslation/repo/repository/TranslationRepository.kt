@@ -13,6 +13,10 @@ class TranslationRepository(
         return remoteDataSource.generateTranslation(input)
     }
 
+    override fun getSingleTranslation(id: Int): TranslationEntity? {
+        return localDataSource.getSingleTranslation(id)
+    }
+
     override fun getSingleTranslationFlow(id: Int): Flow<TranslationEntity?> {
         return localDataSource.getSingleTranslationFlow(id)
     }
@@ -23,5 +27,9 @@ class TranslationRepository(
 
     override fun upsertTranslation(entity: TranslationEntity): Long {
         return localDataSource.upsertTranslation(entity)
+    }
+
+    override fun deleteTranslationById(id: Int): Int {
+        return localDataSource.deleteTranslationById(id)
     }
 }

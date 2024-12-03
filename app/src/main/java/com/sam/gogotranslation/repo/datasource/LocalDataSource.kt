@@ -14,11 +14,19 @@ class LocalDataSource(private val db: MyDatabase) : BaseDataSource {
         return db.translationDao().upsertOne(entity)
     }
 
+    override fun getSingleTranslation(id: Int): TranslationEntity? {
+        return db.translationDao().getOneById(id)
+    }
+
     override fun getSingleTranslationFlow(id: Int): Flow<TranslationEntity?> {
         return db.translationDao().getOneFlowById(id)
     }
 
     override fun getTranslationsFlow(): Flow<List<TranslationEntity>> {
         return db.translationDao().getListFlow()
+    }
+
+    override fun deleteTranslationById(id: Int): Int {
+        return db.translationDao().deleteOneById(id)
     }
 }

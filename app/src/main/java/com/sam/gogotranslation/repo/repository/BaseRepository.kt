@@ -6,7 +6,9 @@ import kotlinx.coroutines.flow.Flow
 
 interface BaseRepository {
     suspend fun generateTranslation(input: String): GenerateContentResponse
+    fun getSingleTranslation(id: Int): TranslationEntity?
     fun getSingleTranslationFlow(id: Int): Flow<TranslationEntity?>
     fun getTranslationsFlow(): Flow<List<TranslationEntity>>
     fun upsertTranslation(entity: TranslationEntity): Long
+    fun deleteTranslationById(id: Int): Int
 }

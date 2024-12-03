@@ -1,27 +1,48 @@
 package com.sam.gogotranslation.ui.view.history
 
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.rememberSplineBasedDecay
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.AnchoredDraggableState
+import androidx.compose.foundation.gestures.DraggableAnchors
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.anchoredDraggable
+import androidx.compose.foundation.gestures.animateTo
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
@@ -29,16 +50,22 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.sam.gogotranslation.R
+import com.sam.gogotranslation.repo.data.State
 import com.sam.gogotranslation.repo.data.TranslationEntity
 import com.sam.gogotranslation.ui.theme.body1
 import com.sam.gogotranslation.ui.view.home.KEY_HISTORY_SELECTED
+import kotlinx.coroutines.launch
 import timber.log.Timber
+import kotlin.math.roundToInt
 
 private const val DIALOG_HEIGHT_PERCENTAGE = 0.9f
+
+private enum class HorizontalDragValue { Settled, Deleted }
 
 @Composable
 fun HistoryScreen(
@@ -55,6 +82,11 @@ fun HistoryScreen(
         }
     }
     val translations by viewModel.translations.collectAsState(emptyList())
+    val deleteResult by viewModel.deleteResult.collectAsState(State.Empty)
+
+    LaunchedEffect(deleteResult) {
+        viewModel.clearDeleteId()
+    }
 
     Box(
         modifier = modifier
@@ -83,7 +115,10 @@ fun HistoryScreen(
                                 }.onFailure(Timber::e)
 
                                 navController.navigateUp()
-                            }
+                            },
+                            onDelete = { entity ->
+                                viewModel.deleteTranslation(entity.id)
+                            },
                         )
 
                         if (index < translations.size - 1) Spacer(
@@ -104,38 +139,102 @@ fun HistoryScreen(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun TranslationItemView(
     modifier: Modifier = Modifier,
     item: TranslationEntity,
     onCardClick: (TranslationEntity) -> Unit = {},
+    onDelete: (TranslationEntity) -> Unit = {},
 ) {
     val density = LocalDensity.current
+    val scope = rememberCoroutineScope()
     val textMeasurer = rememberTextMeasurer()
     val lineHeight = textMeasurer.measure(
         text = "Test\nTest",
         style = MaterialTheme.typography.body1,
     ).size.height
-    val lineHeightDp = with(density) { lineHeight.toDp() }
-
-    Card(
-        modifier = modifier
-            .clickable {
-                onCardClick(item)
+    val itemHeight = with(density) { lineHeight.toDp() } + 32.dp
+    val deleteAnchor = with(density) { 60.dp.toPx() }
+    val anchors = DraggableAnchors {
+        HorizontalDragValue.Settled at 0f
+        HorizontalDragValue.Deleted at -deleteAnchor
+    }
+    val decayAnimationSpec = rememberSplineBasedDecay<Float>()
+    val state = remember {
+        AnchoredDraggableState(
+            initialValue = HorizontalDragValue.Settled,
+            anchors = anchors,
+            positionalThreshold = { totalDistance ->
+                totalDistance * 0.6f
             },
-        colors = CardDefaults.cardColors().copy(
-            containerColor = colorResource(R.color.bg_secondary),
-        ),
-    ) {
-        Text(
-            modifier = Modifier
-                .padding(16.dp)
-                .heightIn(min = lineHeightDp),
-            text = item.input,
-            maxLines = 2,
-            overflow = TextOverflow.Ellipsis,
-            style = MaterialTheme.typography.body1,
+            velocityThreshold = { 0.3f },
+            snapAnimationSpec = tween(),
+            decayAnimationSpec = decayAnimationSpec,
         )
+    }
+    SideEffect { state.updateAnchors(anchors) }
+
+    Box(
+        modifier = Modifier
+            .height(itemHeight)
+            .fillMaxWidth(),
+    ) {
+        Box(
+            modifier = Modifier
+                .width(60.dp)
+                .fillMaxHeight()
+                .align(Alignment.CenterEnd)
+                .clickable {
+                    onDelete(item)
+                    scope.launch { state.animateTo(HorizontalDragValue.Settled) }
+                },
+            contentAlignment = Alignment.Center,
+        ) {
+            Icon(
+                modifier = Modifier
+                    .size(24.dp),
+                imageVector = Icons.Default.Delete,
+                tint = Color.Red,
+                contentDescription = "Delete",
+            )
+        }
+
+        Card(
+            modifier = modifier
+                .offset {
+                    IntOffset(
+                        x = state
+                            .requireOffset()
+                            .roundToInt(),
+                        y = 0,
+                    )
+                }
+                .fillMaxSize()
+                .anchoredDraggable(state, Orientation.Horizontal)
+                .clip(RoundedCornerShape(16.dp))
+                .clickable {
+                    onCardClick(item)
+                },
+            colors = CardDefaults.cardColors().copy(
+                containerColor = colorResource(R.color.bg_secondary),
+            ),
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 16.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.Start,
+            ) {
+                Text(
+                    text = item.input,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                    style = MaterialTheme.typography.body1,
+                )
+            }
+        }
     }
 }
 

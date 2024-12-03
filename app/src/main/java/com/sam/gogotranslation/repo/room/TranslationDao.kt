@@ -23,6 +23,12 @@ interface TranslationDao {
     @Delete
     fun deleteOne(entity: TranslationEntity)
 
+    @Query("DELETE FROM translation WHERE id = :id")
+    fun deleteOneById(id: Int): Int
+
+    @Query("SELECT * FROM translation WHERE id=:id ")
+    fun getOneById(id: Int): TranslationEntity?
+
     @Query("SELECT * FROM translation WHERE id=:id ")
     fun getOneFlowById(id: Int): Flow<TranslationEntity?>
 

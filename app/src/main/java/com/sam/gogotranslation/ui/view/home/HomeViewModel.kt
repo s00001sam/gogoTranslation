@@ -77,6 +77,9 @@ class HomeViewModel @Inject constructor(
                 getSingleTranslationUseCase.getStateFlow(id = it)
             }.collect {
                 _currTranslationEntity.tryEmit(it)
+                if (it == null) {
+                    clearInput()
+                }
             }
         }
     }
@@ -96,7 +99,7 @@ class HomeViewModel @Inject constructor(
             }.collectLatest { state ->
                 if (state is State.Success) {
                     val id = state.data.first.toInt()
-                    _translationId.tryEmit(id)
+                    setCurrId(id)
                 }
                 _resultState.tryEmit(state)
             }

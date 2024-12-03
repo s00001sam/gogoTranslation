@@ -14,11 +14,19 @@ class RemoteDataSource(private val model: GenerativeModel) : BaseDataSource {
         TODO("Not yet implemented")
     }
 
+    override fun getSingleTranslation(id: Int): TranslationEntity? {
+        TODO("Not yet implemented")
+    }
+
     override fun getSingleTranslationFlow(id: Int): Flow<TranslationEntity?> {
         TODO("Not yet implemented")
     }
 
     override fun getTranslationsFlow(): Flow<List<TranslationEntity>> {
+        TODO("Not yet implemented")
+    }
+
+    override fun deleteTranslationById(id: Int): Int {
         TODO("Not yet implemented")
     }
 }

@@ -170,7 +170,6 @@ fun HomeScreen(
                     input = it
                 },
                 onClear = {
-                    viewModel.clearInput()
                     viewModel.clearCurrId()
                 },
                 onSwitchLanguage = {
