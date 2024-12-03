@@ -67,8 +67,8 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.sam.gogotranslation.History
 import com.sam.gogotranslation.R
-import com.sam.gogotranslation.ROUTER_DIALOG_HISTORY
 import com.sam.gogotranslation.repo.data.LanguageEntity
 import com.sam.gogotranslation.repo.data.State
 import com.sam.gogotranslation.ui.theme.body1
@@ -134,7 +134,7 @@ fun HomeScreen(
         topBar = {
             HomeAppBar(
                 toHistories = {
-                    navController.navigate(route = ROUTER_DIALOG_HISTORY)
+                    navController.navigate(route = History)
                 }
             )
         },

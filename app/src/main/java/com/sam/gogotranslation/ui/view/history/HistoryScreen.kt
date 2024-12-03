@@ -1,6 +1,7 @@
 package com.sam.gogotranslation.ui.view.history
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -106,7 +107,8 @@ fun TranslationItemView(
     val lineHeightDp = with(density) { lineHeight.toDp() }
 
     Card(
-        modifier = modifier,
+        modifier = modifier
+            .clickable {  },
         colors = CardDefaults.cardColors().copy(
             containerColor = colorResource(R.color.bg_secondary),
         ),

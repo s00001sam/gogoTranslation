@@ -1,8 +1,10 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
+    alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ksp)
     alias(libs.plugins.kotlin.parcelize)
+    alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.mapsplatform.secrets)
     alias(libs.plugins.room)
     alias(libs.plugins.hilt)
@@ -49,9 +51,6 @@ android {
     buildFeatures {
         compose = true
         buildConfig = true
-    }
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.3"
     }
     packaging {
         resources {
@@ -121,4 +120,7 @@ dependencies {
     debugImplementation(libs.facebook.flipper.network)
     debugImplementation(libs.facebook.soloader)
     releaseImplementation(libs.facebook.flipper.noop)
+
+    // Serialization
+    implementation(libs.kotlin.serialization)
 }

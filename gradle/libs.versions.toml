@@ -1,29 +1,30 @@
 [versions]
 agp = "8.4.2"
-kotlin = "1.9.10"
-ksp = "1.9.10-1.0.13"
+kotlin = "2.0.20"
+serialization = "1.7.3"
+ksp = "2.0.20-1.0.25"
 coreKtx = "1.13.1"
 junit = "4.13.2"
 junitVersion = "1.2.1"
 espressoCore = "3.6.1"
-lifecycleRuntimeKtx = "2.8.4"
-activityCompose = "1.9.1"
-composeBom = "2024.10.00"
-viewmodelCompose = "2.8.4"
-navigationCompose = "2.7.7"
+lifecycleRuntimeKtx = "2.8.7"
+activityCompose = "1.9.3"
+composeBom = "2024.11.00"
+viewmodelCompose = "2.8.7"
+navigationCompose = "2.8.4"
 hiltNavigationCompose = "1.2.0"
-constraintlayoutCompose = "1.0.1"
+constraintlayoutCompose = "1.1.0"
 geminiVersion = "0.9.0"
 mapsSecrets = "2.0.1"
 room = "2.6.1"
-hilt = "2.49"
+hilt = "2.52"
 timber = "5.0.1"
-retrofit = "2.9.0"
+retrofit = "2.11.0"
 retrofit-adapter = "0.9.2"
 moshi = "1.13.0"
 okhttp-bom = "4.12.0"
-coil = "2.5.0"
-flipper = "0.220.0"
+coil = "2.7.0"
+flipper = "0.267.1"
 soloader = "0.10.5"
 
 [libraries]
@@ -65,12 +66,15 @@ facebook-flipper = { group = "com.facebook.flipper", name = "flipper", version.r
 facebook-flipper-noop = { group = "com.facebook.flipper", name = "flipper-noop", version.ref = "flipper" }
 facebook-flipper-network = { group = "com.facebook.flipper", name = "flipper-network-plugin", version.ref = "flipper" }
 facebook-soloader = { group = "com.facebook.soloader", name = "soloader", version.ref = "soloader" }
+kotlin-serialization = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "serialization" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 mapsplatform-secrets = { id = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin", version.ref = "mapsSecrets" }
 room = { id = "androidx.room", version.ref = "room" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
