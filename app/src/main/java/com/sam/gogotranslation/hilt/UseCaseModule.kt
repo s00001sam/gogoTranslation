@@ -1,7 +1,7 @@
 package com.sam.gogotranslation.hilt
 
 import android.content.Context
-import com.sam.gogotranslation.repo.repository.TranslationRepository
+import com.sam.gogotranslation.repo.repository.BaseRepository
 import com.sam.gogotranslation.repo.usecase.DeleteTranslationUseCase
 import com.sam.gogotranslation.repo.usecase.GetSingleTranslationUseCase
 import com.sam.gogotranslation.repo.usecase.GetTranslationsUseCase
@@ -18,19 +18,19 @@ class UseCaseModule {
 
     @Provides
     fun provideTranslateUseCase(
-        repository: TranslationRepository,
+        repository: BaseRepository,
         @ApplicationContext context: Context,
     ) = TranslateUseCase(context, repository)
 
     @Provides
-    fun provideGetSingleTranslationUseCase(repository: TranslationRepository) =
+    fun provideGetSingleTranslationUseCase(repository: BaseRepository) =
         GetSingleTranslationUseCase(repository)
 
     @Provides
-    fun provideGetTranslationsUseCase(repository: TranslationRepository) =
+    fun provideGetTranslationsUseCase(repository: BaseRepository) =
         GetTranslationsUseCase(repository)
 
     @Provides
-    fun provideDeleteTranslationUseCase(repository: TranslationRepository) =
+    fun provideDeleteTranslationUseCase(repository: BaseRepository) =
         DeleteTranslationUseCase(repository)
 }

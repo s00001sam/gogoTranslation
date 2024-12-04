@@ -6,6 +6,7 @@ import com.sam.gogotranslation.BuildConfig
 import com.sam.gogotranslation.repo.datasource.BaseDataSource
 import com.sam.gogotranslation.repo.datasource.LocalDataSource
 import com.sam.gogotranslation.repo.datasource.RemoteDataSource
+import com.sam.gogotranslation.repo.repository.BaseRepository
 import com.sam.gogotranslation.repo.repository.TranslationRepository
 import com.sam.gogotranslation.repo.room.MyDatabase
 import dagger.Module
@@ -46,7 +47,7 @@ class RepoModule {
     fun provideRepository(
         @RemoteData remoteDataSource: BaseDataSource,
         @LocalData localDataSource: BaseDataSource,
-    ) = TranslationRepository(localDataSource, remoteDataSource)
+    ): BaseRepository = TranslationRepository(localDataSource, remoteDataSource)
 
     @Singleton
     @Provides

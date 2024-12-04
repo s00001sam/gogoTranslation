@@ -6,19 +6,24 @@ import com.google.ai.client.generativeai.type.GenerateContentResponse
 import com.sam.gogotranslation.repo.data.LanguageEntity
 import com.sam.gogotranslation.repo.data.State
 import com.sam.gogotranslation.repo.data.TranslationEntity
+import com.sam.gogotranslation.repo.repository.BaseRepository
 import com.sam.gogotranslation.repo.usecase.GetSingleTranslationUseCase
 import com.sam.gogotranslation.repo.usecase.TranslateUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.util.Date
 import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
+    private val repository: BaseRepository,
     private val translateUseCase: TranslateUseCase,
     private val getSingleTranslationUseCase: GetSingleTranslationUseCase,
 ) : ViewModel() {
@@ -71,6 +76,15 @@ class HomeViewModel @Inject constructor(
         _outputLanguage.tryEmit(temp)
     }
 
+    suspend fun updateTranslationEditTime(
+        id: Int,
+        time: Date = Date(),
+    ): Int {
+        return withContext(Dispatchers.IO) {
+            repository.updateTranslationEditTime(id, time)
+        }
+    }
+
     private fun collectEntityFlow() {
         viewModelScope.launch {
             translationId.flatMapLatest {
@@ -92,16 +106,26 @@ class HomeViewModel @Inject constructor(
                         id = translationId.value,
                         oriInput = it,
                         promptName = outputLanguage.value.promptName,
+                        inputLanguage = inputLanguage.value,
+                        outputLanguage = outputLanguage.value,
                     )
                 } else {
                     flowOf(State.Empty)
                 }
             }.collectLatest { state ->
-                if (state is State.Success) {
-                    val id = state.data.first.toInt()
-                    setCurrId(id)
-                }
                 _resultState.tryEmit(state)
+                when (state) {
+                    is State.Success -> {
+                        val id = state.data.first.toInt()
+                        setCurrId(id)
+                    }
+
+                    is State.Error -> {
+                        clearInput()
+                    }
+
+                    else -> {}
+                }
             }
         }
     }

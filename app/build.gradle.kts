@@ -106,6 +106,7 @@ dependencies {
 
     // Moshi
     implementation(libs.moshi)
+    implementation(libs.moshi.adapter)
 
     // Okhttp3
     implementation(platform(libs.okhttp.bom))

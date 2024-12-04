@@ -4,6 +4,7 @@ import com.google.ai.client.generativeai.GenerativeModel
 import com.google.ai.client.generativeai.type.GenerateContentResponse
 import com.sam.gogotranslation.repo.data.TranslationEntity
 import kotlinx.coroutines.flow.Flow
+import java.util.Date
 
 class RemoteDataSource(private val model: GenerativeModel) : BaseDataSource {
     override suspend fun generateTranslation(input: String): GenerateContentResponse {
@@ -27,6 +28,10 @@ class RemoteDataSource(private val model: GenerativeModel) : BaseDataSource {
     }
 
     override fun deleteTranslationById(id: Int): Int {
+        TODO("Not yet implemented")
+    }
+
+    override fun updateOneEditTime(id: Int, time: Date): Int {
         TODO("Not yet implemented")
     }
 }

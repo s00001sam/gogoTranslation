@@ -139,6 +139,7 @@ fun HomeScreen(
         val translationEntity = selectedHistoryItem?.value ?: return@LaunchedEffect
         viewModel.setCurrId(translationEntity.id)
         input = translationEntity.input
+        viewModel.updateTranslationEditTime(translationEntity.id)
         savedStateHandle[KEY_HISTORY_SELECTED] = null
     }
 

@@ -3,6 +3,7 @@ package com.sam.gogotranslation.repo.datasource
 import com.google.ai.client.generativeai.type.GenerateContentResponse
 import com.sam.gogotranslation.repo.data.TranslationEntity
 import kotlinx.coroutines.flow.Flow
+import java.util.Date
 
 interface BaseDataSource {
     suspend fun generateTranslation(input: String): GenerateContentResponse
@@ -11,4 +12,5 @@ interface BaseDataSource {
     fun getSingleTranslationFlow(id: Int): Flow<TranslationEntity?>
     fun getTranslationsFlow(): Flow<List<TranslationEntity>>
     fun deleteTranslationById(id: Int): Int
+    fun updateOneEditTime(id: Int, time: Date): Int
 }

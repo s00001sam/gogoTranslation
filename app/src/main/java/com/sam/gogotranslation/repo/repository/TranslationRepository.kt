@@ -4,6 +4,7 @@ import com.google.ai.client.generativeai.type.GenerateContentResponse
 import com.sam.gogotranslation.repo.data.TranslationEntity
 import com.sam.gogotranslation.repo.datasource.BaseDataSource
 import kotlinx.coroutines.flow.Flow
+import java.util.Date
 
 class TranslationRepository(
     private val localDataSource: BaseDataSource,
@@ -31,5 +32,9 @@ class TranslationRepository(
 
     override fun deleteTranslationById(id: Int): Int {
         return localDataSource.deleteTranslationById(id)
+    }
+
+    override fun updateTranslationEditTime(id: Int, time: Date): Int {
+        return localDataSource.updateOneEditTime(id, time)
     }
 }

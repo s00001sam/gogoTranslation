@@ -8,6 +8,7 @@ import androidx.room.Update
 import androidx.room.Upsert
 import com.sam.gogotranslation.repo.data.TranslationEntity
 import kotlinx.coroutines.flow.Flow
+import java.util.Date
 
 @Dao
 interface TranslationDao {
@@ -32,6 +33,9 @@ interface TranslationDao {
     @Query("SELECT * FROM translation WHERE id=:id ")
     fun getOneFlowById(id: Int): Flow<TranslationEntity?>
 
-    @Query("SELECT * FROM translation ORDER BY id DESC")
+    @Query("SELECT * FROM translation ORDER BY editTime DESC")
     fun getListFlow(): Flow<List<TranslationEntity>>
+
+    @Query("UPDATE translation SET editTime = :time WHERE id = :id")
+    fun updateOneEditTime(id: Int, time: Date): Int
 }
