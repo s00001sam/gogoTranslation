@@ -43,6 +43,7 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -50,6 +51,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.SolidColor
@@ -78,6 +80,7 @@ import com.sam.gogotranslation.ui.view.Copy
 import com.sam.gogotranslation.ui.view.CustomExpandableFAB
 import com.sam.gogotranslation.ui.view.LoadingIndicator
 import com.sam.gogotranslation.ui.view.MyFABItem
+import com.sam.gogotranslation.ui.view.Rotate
 import com.sam.gogotranslation.ui.view.noRippleClickable
 
 private const val BOTTOM_MAX_HEIGHT_PERCENT = 0.35f
@@ -104,6 +107,9 @@ fun HomeScreen(
     var input by rememberSaveable {
         mutableStateOf("")
     }
+    var resultRotateAngle by rememberSaveable {
+        mutableFloatStateOf(0f)
+    }
     val savedStateHandle = navController.currentBackStackEntry?.savedStateHandle
     val selectedHistoryItem = savedStateHandle
         ?.getStateFlow<TranslationEntity?>(KEY_HISTORY_SELECTED, null)
@@ -121,6 +127,10 @@ fun HomeScreen(
         MyFABItem(
             icon = Icons.Default.Share,
             textRes = R.string.fab_share,
+        ),
+        MyFABItem(
+            icon = Icons.Default.Rotate,
+            textRes = R.string.fab_rotate,
         ),
     )
 
@@ -193,6 +203,10 @@ fun HomeScreen(
                 onItemClick = ItemClick@{ item ->
                     val output = translationResult?.output.orEmpty()
                     when (item.textRes) {
+                        R.string.fab_rotate -> {
+                            resultRotateAngle = if (resultRotateAngle == 0f) 180f else 0f
+                        }
+
                         R.string.fab_copy -> {
                             if (output.isEmpty()) return@ItemClick
                             clipboardManager.setText(AnnotatedString(output))
@@ -234,7 +248,8 @@ fun HomeScreen(
                         end = 16.dp,
                         bottom = 48.dp,
                     )
-                    .fillMaxWidth(),
+                    .fillMaxWidth()
+                    .rotate(resultRotateAngle),
                 text = output,
             )
 
