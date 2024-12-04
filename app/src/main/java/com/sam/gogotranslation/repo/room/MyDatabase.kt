@@ -12,7 +12,9 @@ import com.sam.gogotranslation.repo.data.TranslationEntity
     version = 1,
     exportSchema = false,
 )
-@TypeConverters(BasicConverters::class)
+@TypeConverters(
+    BasicConverters::class,
+)
 abstract class MyDatabase : RoomDatabase() {
     abstract fun translationDao(): TranslationDao
 
