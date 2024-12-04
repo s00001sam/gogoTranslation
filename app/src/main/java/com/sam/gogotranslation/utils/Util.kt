@@ -8,7 +8,7 @@ import java.time.format.DateTimeFormatter
 import java.util.Date
 import java.util.Locale
 
-fun Date.toZonedDateTime(zone: ZoneId = ZoneId.of("UTC")): ZonedDateTime? {
+fun Date.toZonedDateTime(zone: ZoneId = ZoneId.systemDefault()): ZonedDateTime? {
     runCatching {
         return ZonedDateTime.ofInstant(this.toInstant(), zone)
     }.getOrElse {

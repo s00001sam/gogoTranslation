@@ -23,6 +23,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
@@ -58,7 +59,10 @@ import com.sam.gogotranslation.R
 import com.sam.gogotranslation.repo.data.State
 import com.sam.gogotranslation.repo.data.TranslationEntity
 import com.sam.gogotranslation.ui.theme.body1
+import com.sam.gogotranslation.ui.theme.label
 import com.sam.gogotranslation.ui.view.home.KEY_HISTORY_SELECTED
+import com.sam.gogotranslation.utils.HISTORY_EDIT_TIME_FORMATTER
+import com.sam.gogotranslation.utils.format
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import kotlin.math.roundToInt
@@ -92,7 +96,7 @@ fun HistoryScreen(
         modifier = modifier
             .clip(RoundedCornerShape(16.dp))
             .size(dialogHeight.dp)
-            .background(color = colorResource(R.color.bg_primary))
+            .background(color = colorResource(R.color.bg_ground))
             .padding(16.dp),
     ) {
         when {
@@ -154,7 +158,7 @@ fun TranslationItemView(
         text = "Test\nTest",
         style = MaterialTheme.typography.body1,
     ).size.height
-    val itemHeight = with(density) { lineHeight.toDp() } + 32.dp
+    val itemHeight = with(density) { lineHeight.toDp() }
     val deleteAnchor = with(density) { 60.dp.toPx() }
     val anchors = DraggableAnchors {
         HorizontalDragValue.Settled at 0f
@@ -173,11 +177,19 @@ fun TranslationItemView(
             decayAnimationSpec = decayAnimationSpec,
         )
     }
+    val inputLanguageName = stringResource(item.inputLanguage.displayNameRes)
+    val outputLanguageName = stringResource(item.outputLanguage.displayNameRes)
+    val languageDisplay = stringResource(
+        R.string.history_language,
+        inputLanguageName,
+        outputLanguageName,
+    )
+    val editTimeStr = item.editZoneDateTime?.format(HISTORY_EDIT_TIME_FORMATTER).orEmpty()
+
     SideEffect { state.updateAnchors(anchors) }
 
     Box(
         modifier = Modifier
-            .height(itemHeight)
             .fillMaxWidth(),
     ) {
         Box(
@@ -223,15 +235,44 @@ fun TranslationItemView(
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(horizontal = 16.dp),
+                    .padding(horizontal = 16.dp, vertical = 12.dp),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.Start,
             ) {
                 Text(
-                    text = item.input,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis,
-                    style = MaterialTheme.typography.body1,
+                    modifier = Modifier
+                        .background(
+                            color = colorResource(R.color.bg_decoration),
+                            shape = CircleShape,
+                        )
+                        .padding(horizontal = 8.dp, vertical = 4.dp),
+                    text = languageDisplay,
+                    style = MaterialTheme.typography.label,
+                )
+
+                Spacer(Modifier.size(8.dp))
+
+                Box(
+                    modifier = Modifier
+                        .height(itemHeight)
+                        .fillMaxWidth(),
+                    contentAlignment = Alignment.CenterStart,
+                ) {
+                    Text(
+                        text = item.input,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis,
+                        style = MaterialTheme.typography.body1,
+                    )
+                }
+
+                Spacer(Modifier.size(8.dp))
+
+                Text(
+                    modifier = Modifier
+                        .align(Alignment.End),
+                    text = editTimeStr,
+                    style = MaterialTheme.typography.label,
                 )
             }
         }

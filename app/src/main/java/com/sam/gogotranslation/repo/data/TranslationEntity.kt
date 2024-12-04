@@ -5,7 +5,9 @@ import androidx.room.Entity
 import androidx.room.Ignore
 import androidx.room.PrimaryKey
 import com.sam.gogotranslation.repo.data.LanguageEntity.Companion.getLanguageEntity
+import com.sam.gogotranslation.utils.toZonedDateTime
 import kotlinx.parcelize.Parcelize
+import java.time.ZonedDateTime
 import java.util.Date
 
 @Entity(tableName = "translation")
@@ -26,5 +28,13 @@ data class TranslationEntity(
 
     @get:Ignore
     val outputLanguage: LanguageEntity
-        get() = inputLanguageTag.getLanguageEntity()
+        get() = outputLanguageTag.getLanguageEntity()
+
+    @get:Ignore
+    val createZoneDateTime: ZonedDateTime?
+        get() = createTime.toZonedDateTime()
+
+    @get:Ignore
+    val editZoneDateTime: ZonedDateTime?
+        get() = editTime.toZonedDateTime()
 }
