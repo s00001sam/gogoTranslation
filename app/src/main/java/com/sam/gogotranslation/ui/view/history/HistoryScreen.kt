@@ -13,9 +13,9 @@ import androidx.compose.foundation.gestures.animateTo
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
@@ -61,6 +61,7 @@ import com.sam.gogotranslation.repo.data.TranslationEntity
 import com.sam.gogotranslation.ui.theme.body1
 import com.sam.gogotranslation.ui.theme.label
 import com.sam.gogotranslation.ui.view.home.KEY_HISTORY_SELECTED
+import com.sam.gogotranslation.ui.view.noBoundClickable
 import com.sam.gogotranslation.utils.HISTORY_EDIT_TIME_FORMATTER
 import com.sam.gogotranslation.utils.format
 import kotlinx.coroutines.launch
@@ -189,14 +190,15 @@ fun TranslationItemView(
     SideEffect { state.updateAnchors(anchors) }
 
     Box(
-        modifier = Modifier
-            .fillMaxWidth(),
+        modifier = modifier
+            .height(IntrinsicSize.Max),
+        contentAlignment = Alignment.CenterEnd,
     ) {
         Box(
             modifier = Modifier
                 .width(60.dp)
                 .fillMaxHeight()
-                .align(Alignment.CenterEnd)
+                .clip(CircleShape)
                 .clickable {
                     onDelete(item)
                     scope.launch { state.animateTo(HorizontalDragValue.Settled) }
@@ -213,7 +215,7 @@ fun TranslationItemView(
         }
 
         Card(
-            modifier = modifier
+            modifier = Modifier
                 .offset {
                     IntOffset(
                         x = state
@@ -222,7 +224,7 @@ fun TranslationItemView(
                         y = 0,
                     )
                 }
-                .fillMaxSize()
+                .fillMaxWidth()
                 .anchoredDraggable(state, Orientation.Horizontal)
                 .clip(RoundedCornerShape(16.dp))
                 .clickable {
@@ -234,7 +236,7 @@ fun TranslationItemView(
         ) {
             Column(
                 modifier = Modifier
-                    .fillMaxSize()
+                    .fillMaxWidth()
                     .padding(horizontal = 16.dp, vertical = 12.dp),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.Start,
