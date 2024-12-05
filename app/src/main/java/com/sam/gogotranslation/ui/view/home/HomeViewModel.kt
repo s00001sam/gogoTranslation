@@ -70,10 +70,18 @@ class HomeViewModel @Inject constructor(
         _translationId.tryEmit(id)
     }
 
+    fun setInputLanguage(language: LanguageEntity) {
+        _inputLanguage.tryEmit(language)
+    }
+
+    fun setOutputLanguage(language: LanguageEntity) {
+        _outputLanguage.tryEmit(language)
+    }
+
     fun switchLanguage() {
         val temp = inputLanguage.value
-        _inputLanguage.tryEmit(outputLanguage.value)
-        _outputLanguage.tryEmit(temp)
+        setInputLanguage(outputLanguage.value)
+        setOutputLanguage(temp)
     }
 
     suspend fun updateTranslationEditTime(

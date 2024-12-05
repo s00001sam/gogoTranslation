@@ -150,6 +150,8 @@ fun HomeScreen(
         viewModel.setCurrId(translationEntity.id)
         input = translationEntity.input
         viewModel.updateTranslationEditTime(translationEntity.id)
+        viewModel.setInputLanguage(translationEntity.inputLanguage)
+        viewModel.setOutputLanguage(translationEntity.outputLanguage)
         savedStateHandle[KEY_HISTORY_SELECTED] = null
     }
 
