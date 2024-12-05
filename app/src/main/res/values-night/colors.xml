@@ -63,6 +63,4 @@
 
     <color name="white">#FFFFFFFF</color>
     <color name="black">#FF000000</color>
-
-    <color name="map_marker_tint">#00074F</color>
 </resources>

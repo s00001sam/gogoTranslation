@@ -1,3 +1,6 @@
+import java.io.FileInputStream
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
@@ -18,6 +21,17 @@ room {
 android {
     namespace = "com.sam.gogotranslation"
     compileSdk = 34
+    signingConfigs {
+        create("release") {
+            val localProperties = Properties()
+            localProperties.load(FileInputStream(rootProject.file("local.properties")))
+
+            storeFile = localProperties["SIGN_STORE_FILE"]?.let { file(it) }
+            storePassword = localProperties["SIGN_STORE_PASSWORD"] as String?
+            keyAlias = localProperties["SIGN_ALIAS"] as String?
+            keyPassword = localProperties["SIGN_KEY_PASSWORD"] as String?
+        }
+    }
 
     defaultConfig {
         applicationId = "com.sam.gogotranslation"
@@ -34,11 +48,13 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            signingConfig = signingConfigs.getByName("release")
+            isDebuggable = false
         }
     }
     compileOptions {
